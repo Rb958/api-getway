@@ -1,0 +1,87 @@
+plugins {
+    id 'java'
+    id 'maven'
+    id 'signing'
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+group ='io.github.rb958'
+archivesBaseName = "rkernel"
+version = '1.0-SNAPSHOT'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: username, password: password)
+            }
+
+            snapshotRepository(url: "https://s01.oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: username, password: password)
+            }
+
+            pom.project{
+                name 'RBKernel'
+                packaging 'jar'
+                description 'Kernel of whole the system'
+                url 'https://github.com/Rb958/app-rkernel'
+
+                scm{
+                    connection 'scm:github:https://github.com/Rb958/api-getway.git'
+                    developerConnection 'https://github.com/Rb958/api-getway.git'
+                    url 'https://github.com/Rb958/api-getway.git'
+                }
+
+                licenses{
+                    license{
+                        name 'The apache licence version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers{
+                    developer{
+                        id 'richie'
+                        name 'Richie AKAWA'
+                        email 'richiebayless@gmail.com'
+                    }
+                }
+            }
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'com.sun.xml.bind:jaxb-impl:3.0.2'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+test {
+    useJUnitPlatform()
+}
