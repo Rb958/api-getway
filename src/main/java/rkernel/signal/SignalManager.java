@@ -32,7 +32,7 @@ public class SignalManager implements ISignalManager{
             }
             registry = getRegistry();
         } catch (FileManagerException | IOException e) {
-            e.printStackTrace();
+            kernel.dispatchLogException(e);
         }
     }
 
@@ -72,7 +72,7 @@ public class SignalManager implements ISignalManager{
         try {
             FileManager.getInstance(documentroot).writeFileContent(registry, getRegistryPath());
         } catch (IOException e) {
-
+            kernel.dispatchLogException(e);
         }
     }
 
@@ -81,7 +81,7 @@ public class SignalManager implements ISignalManager{
             try {
                 Files.createDirectories(Paths.get(documentroot.getPath().concat(registriesDirectory)));
             } catch (IOException e) {
-
+                kernel.dispatchLogException(e);
             }
         }
         return Paths.get(documentroot.getPath().concat("/registries/"+ kernel.getName().replace(" ", "_") +".xml"));

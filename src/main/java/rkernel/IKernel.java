@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * @author Richie AKAWA <richiebayless@gmail.com>
+ * @author Richie AKAWA richiebayless@gmail.com
  * @version 1.0
  * @since 1.0
  */

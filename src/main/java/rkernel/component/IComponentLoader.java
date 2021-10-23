@@ -35,13 +35,15 @@ public interface IComponentLoader<T> {
                     tmpClassName = tmpClassName.substring(0, tmpClassName.length() - 6);
                     tmpClassName = tmpClassName.replace('/', '.');
                     Class<?> tmpClass = Class.forName(tmpClassName, true, loader);
-                    List<Class<?>> classes = Arrays.stream(tmpClass.getInterfaces())
-                            .filter(tmpInter -> tmpInter == interClass)
-                            .collect(Collectors.toList());
-                    if (!classes.isEmpty()){
-                        componentClass = classes.get(0);
+                    if (tmpClass != interClass) {
+                        List<Class<?>> classes = Arrays.stream(tmpClass.getInterfaces())
+                                .filter(tmpInter -> tmpInter == interClass)
+                                .collect(Collectors.toList());
+                        if (!classes.isEmpty()) {
+                            componentClass = tmpClass;
+                            found = true;
+                        }
                     }
-                    found = true;
                 }
             }
         } catch (ClassNotFoundException e) {
