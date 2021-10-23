@@ -1,5 +1,5 @@
 /*#################################################################################################
- # Copyright (c) 2021 Afrikpay                                                                    #
+ # Copyright (c) 2021 Richie AKAWA Richie                                                                    #
  #################################################################################################*/
 
 package rkernel.signal;
@@ -51,7 +51,9 @@ public class SignalRegistry {
     }
 
     public void addSignalType(String type, IComponent component){
-        List<SignalTypeEntry> tmpEntries = signalTypeEntries.stream().filter(registryEntry -> registryEntry.type.equalsIgnoreCase(type)).collect(Collectors.toList());
+        List<SignalTypeEntry> tmpEntries = signalTypeEntries.stream()
+                .filter(registryEntry -> registryEntry.type.equalsIgnoreCase(type))
+                .collect(Collectors.toList());
         if (!tmpEntries.isEmpty()){
             signalTypeEntries.removeAll(tmpEntries);
         }
@@ -62,7 +64,9 @@ public class SignalRegistry {
     }
 
     public void addSignalType(String type, IKernel kernel){
-        List<SignalTypeEntry> tmpEntries = signalTypeEntries.stream().filter(registryEntry -> registryEntry.type.equalsIgnoreCase(type)).collect(Collectors.toList());
+        List<SignalTypeEntry> tmpEntries = signalTypeEntries.stream()
+                .filter(registryEntry -> registryEntry.type.equalsIgnoreCase(type))
+                .collect(Collectors.toList());
         if (!tmpEntries.isEmpty()){
             signalTypeEntries.removeAll(tmpEntries);
         }
@@ -73,7 +77,9 @@ public class SignalRegistry {
     }
 
     public void removeSignalType(String type){
-        List<SignalTypeEntry> tmpEntries = signalTypeEntries.stream().filter(registryEntry -> registryEntry.type.equalsIgnoreCase(type)).collect(Collectors.toList());
+        List<SignalTypeEntry> tmpEntries = signalTypeEntries.stream()
+                .filter(registryEntry -> registryEntry.type.equalsIgnoreCase(type))
+                .collect(Collectors.toList());
         if (!tmpEntries.isEmpty()){
             signalTypeEntries.removeAll(tmpEntries);
         }
@@ -131,19 +137,16 @@ public class SignalRegistry {
 
         @Override
         public String toString() {
-            return "SignalTypeEntry{" +
-                    "type='" + type + '\'' +
-                    ", componentName='" + componentName + '\'' +
-                    ", kernelName='" + kernelName + '\'' +
-                    '}';
+            return "Type => " +
+                    ((componentName != null) ? "ComponentName => "+ componentName : "") +
+                    ((kernelName != null) ? "KernelName => "+ kernelName : "")
+                    ;
         }
     }
 
     @Override
     public String toString() {
-        return "SignalRegistry{" +
-                "kernelName='" + kernelName + '\'' +
-                ", signalTypeEntries=" + signalTypeEntries +
-                '}';
+        return "KernelName[" + kernelName + "]" +
+                " => SignalType[" + signalTypeEntries +"]";
     }
 }

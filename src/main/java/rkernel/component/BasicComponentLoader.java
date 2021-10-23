@@ -1,7 +1,6 @@
 package rkernel.component;
 
 import rkernel.IKernel;
-import rkernel.exception.FileManagerException;
 import rkernel.exception.SignalRegistryException;
 import rkernel.utils.file.*;
 
@@ -25,33 +24,33 @@ public final class BasicComponentLoader implements IComponentLoader<IComponent>{
     }
 
     public void loadComponents(File folder){
-        try {
-            File[] files = FileManager.getInstance(folder).getFiles();
-            if (files != null) {
-                for (File file : files) {
-                    System.out.println(file.getName());
-                    Class<?> componentClass = loadSingleFile(file, IComponent.class);
-                    if (componentClass != null)
-                        executeClass(componentClass);
-                }
+        File[] files = folder.listFiles(File::isFile);
+        if (files != null) {
+            for (File file : files) {
+                executeClass(file);
             }
-        }catch (IOException | FileManagerException e) {
-            e.printStackTrace();
         }
     }
 
-    private void executeClass(Class<?> tmpClass){
-        try {
-            System.out.println("Execute Component ... ");
-            System.out.println("rkernel : " + defaultKernel.getName());
-            Constructor<?> constructor = tmpClass.getConstructor();
-            IComponent component = (IComponent) constructor.newInstance();
-            defaultKernel.getSignalType().addAll(component.getSIgnalType());
-            defaultKernel.getComponents().put(component.getName(), component);
-            component.load(defaultKernel);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            defaultKernel.dispatchLogException(e);
-        }
+    private void executeClass(File file){
+        new Thread(() -> {
+            try {
+                Class<?> tmpClass = loadSingleFile(file, IComponent.class);
+                Constructor<?> constructor = tmpClass.getConstructor();
+                IComponent component = (IComponent) constructor.newInstance();
+                component.getSIgnalType().forEach(signalType ->{
+                    try {
+                        defaultKernel.getSignalManager().addSignalType(signalType, component);
+                    } catch (SignalRegistryException e) {
+                        defaultKernel.dispatchLogException(e);
+                    }
+                });
+                defaultKernel.getComponents().put(component.getName(), component);
+                component.load(defaultKernel);
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException | IOException e) {
+                defaultKernel.dispatchLogException(e);
+            }
+        }).start();
     }
 
     @Override
@@ -60,12 +59,7 @@ public final class BasicComponentLoader implements IComponentLoader<IComponent>{
         componentWatcher.addEventListener(new FileAdapter() {
             @Override
             public void onCreateFile(FileEvent event) {
-                try {
-                    Class<?> componentClass = loadSingleFile(event.getFile(), IComponent.class);
-                    executeClass(componentClass);
-                } catch (IOException e) {
-                    defaultKernel.dispatchLogException(e);
-                }
+                executeClass(event.getFile());
             }
 
             @Override

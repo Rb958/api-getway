@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<signalRegistry>
-    <Kernel>Basic Kernel</Kernel>
-    <SignalTypeEntries type="test" componentName="basic_component"/>
-    <SignalTypeEntries type="test 2" componentName="basic_component"/>
-    <SignalTypeEntries type="test 3" componentName="basic_component"/>
-    <SignalTypeEntries type="test 4" componentName="basic_component"/>
-</signalRegistry>
