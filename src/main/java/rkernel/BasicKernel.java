@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public final class BasicKernel implements IKernel{
@@ -42,13 +43,12 @@ public final class BasicKernel implements IKernel{
     public void load() {
         try {
             signalManager = new SignalManager(this);
-            File file = Path.of(".").toFile();
-            Path componentPath = Path.of("components/".concat(kernelName));
+            File file = Paths.get(".").toFile();
+            Path componentPath = Paths.get("components/".concat(kernelName));
             if (Files.notExists(componentPath))
                 Files.createDirectories(componentPath);
             File componentFile = componentPath.toFile();
             if (componentLoader != null) {
-                System.out.println("Load Component");
                 componentLoader.loadComponents(componentFile);
                 componentLoader.watch(componentFile);
             }
