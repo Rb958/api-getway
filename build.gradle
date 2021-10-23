@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id 'java-library'
     id 'maven'
     id 'signing'
 }
@@ -43,12 +43,12 @@ uploadArchives {
                 name 'RBKernel'
                 packaging 'jar'
                 description 'Kernel of whole the system'
-                url 'https://github.com/Rb958/app-rkernel'
+                url 'https://github.com/Rb958/rkernel'
 
                 scm{
-                    connection 'scm:github:https://github.com/Rb958/api-getway.git'
-                    developerConnection 'https://github.com/Rb958/api-getway.git'
-                    url 'https://github.com/Rb958/api-getway.git'
+                    connection 'scm:github:https://github.com/Rb958/rkernel.git'
+                    developerConnection 'https://github.com/Rb958/rkernel.git'
+                    url 'https://github.com/Rb958/rkernel.git'
                 }
 
                 licenses{

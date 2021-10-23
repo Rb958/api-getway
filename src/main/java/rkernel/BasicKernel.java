@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public final class BasicKernel implements IKernel{
@@ -42,22 +43,25 @@ public final class BasicKernel implements IKernel{
     public void load() {
         try {
             signalManager = new SignalManager(this);
-            File file = Path.of(".").toFile();
-            Path componentPath = Path.of("components/".concat(kernelName));
+            File file = Paths.get(".").toFile();
+            Path componentPath = Paths.get("components/".concat(kernelName));
             if (Files.notExists(componentPath))
                 Files.createDirectories(componentPath);
             File componentFile = componentPath.toFile();
             if (componentLoader != null) {
-                System.out.println("Load Component");
-                componentLoader.loadComponents(componentFile);
-                componentLoader.watch(componentFile);
+                new Thread(() -> {
+                    componentLoader.loadComponents(componentFile);
+                    componentLoader.watch(componentFile);
+                }).start();
             }
             if (kernelLoader != null) {
-                kernelLoader.loadComponents(file);
-                kernelLoader.watch(file);
+                new Thread(() -> {
+                    kernelLoader.loadComponents(file);
+                    kernelLoader.watch(file);
+                }).start();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            dispatchLogException(e);
         }
     }
 
@@ -73,12 +77,7 @@ public final class BasicKernel implements IKernel{
     @Override
     public Collection<IKernel> dispatchSignal(BasicSignal<?> signal) {
         List<IKernel> tmpKernel = new ArrayList<>();
-        this.kernels.forEach((name, kernel) -> {
-            if (kernel.getInterpreterOf(signal.getType()) != null){
-                kernel.processSignal(signal);
-                tmpKernel.add(kernel);
-            }
-        });
+        processSignal(signal);
         return tmpKernel;
     }
 
@@ -86,7 +85,6 @@ public final class BasicKernel implements IKernel{
     public void processSignal(BasicSignal<?> signal) {
         // Find Interpreter
         Object interpreter = getInterpreterOf(signal.getType());
-
         // Call Interpreter with his data
         if (interpreter instanceof IComponent){
             ((IComponent) interpreter).processSignal(signal);
@@ -107,11 +105,7 @@ public final class BasicKernel implements IKernel{
 
     @Override
     public Object getInterpreterOf(String signalType) {
-        if(signals.contains(signalType)){
-            return signalManager.findInterpreter(signalType);
-        }else{
-            return null;
-        }
+        return signalManager.findInterpreter(signalType);
     }
 
     @Override

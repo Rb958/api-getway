@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,7 +20,7 @@ public class SignalManager implements ISignalManager{
     protected static SignalRegistry registry;
     protected IKernel kernel;
 
-    private final File documentroot = Path.of(".").toFile();
+    private final File documentroot = Paths.get(".").toFile();
     private final String registriesDirectory = "/registries/";
 
     public SignalManager(IKernel kernel) {
@@ -31,7 +32,7 @@ public class SignalManager implements ISignalManager{
             }
             registry = getRegistry();
         } catch (FileManagerException | IOException e) {
-            e.printStackTrace();
+            kernel.dispatchLogException(e);
         }
     }
 
@@ -71,19 +72,19 @@ public class SignalManager implements ISignalManager{
         try {
             FileManager.getInstance(documentroot).writeFileContent(registry, getRegistryPath());
         } catch (IOException e) {
-
+            kernel.dispatchLogException(e);
         }
     }
 
     public Path getRegistryPath(){
-        if (!Files.exists(Path.of(documentroot.getPath().concat(registriesDirectory)))){
+        if (!Files.exists(Paths.get(documentroot.getPath().concat(registriesDirectory)))){
             try {
-                Files.createDirectories(Path.of(documentroot.getPath().concat(registriesDirectory)));
+                Files.createDirectories(Paths.get(documentroot.getPath().concat(registriesDirectory)));
             } catch (IOException e) {
-
+                kernel.dispatchLogException(e);
             }
         }
-        return Path.of(documentroot.getPath().concat("/registries/"+ kernel.getName().replace(" ", "_") +".xml"));
+        return Paths.get(documentroot.getPath().concat("/registries/"+ kernel.getName().replace(" ", "_") +".xml"));
     }
 
     public void addSignalType(String type, IComponent component) throws SignalRegistryException {
