@@ -6,7 +6,6 @@ import rkernel.signal.BasicSignal;
 import rkernel.signal.ISignalManager;
 import rkernel.signal.SignalManager;
 import rkernel.signal.basic.LoggingSignal;
-import rkernel.utils.file.FileWatcher;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,9 +22,6 @@ public final class BasicKernel implements IKernel{
     private final Map<String, IKernel> kernels;
     private final Map<String, IComponent> components;
     private final Collection<String> signals;
-    private FileWatcher componentWatcher;
-    private FileWatcher kernelWatcher;
-    private boolean running;
 
     private final String kernelName;
 
@@ -34,7 +30,6 @@ public final class BasicKernel implements IKernel{
         this.kernelLoader = builder.getKernelLoader();
         this.kernels = builder.getKernels();
         this.signals = builder.getSignals();
-        this.running = false;
         this.components = new HashMap<>();
         this.kernelName = builder.name;
     }
@@ -82,15 +77,17 @@ public final class BasicKernel implements IKernel{
     }
 
     @Override
-    public void processSignal(BasicSignal<?> signal) {
+    public Object processSignal(BasicSignal<?> signal) {
+        Object response = null;
         // Find Interpreter
         Object interpreter = getInterpreterOf(signal.getType());
         // Call Interpreter with his data
         if (interpreter instanceof IComponent){
-            ((IComponent) interpreter).processSignal(signal);
+            response = ((IComponent) interpreter).processSignal(signal);
         }else if (interpreter instanceof IKernel){
-            ((IKernel) interpreter).processSignal(signal);
+            response = ((IKernel) interpreter).processSignal(signal);
         }
+        return response;
     }
 
     @Override
