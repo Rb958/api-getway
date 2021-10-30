@@ -23,5 +23,5 @@ public interface IComponent {
 
     Collection<String> getSIgnalType();
 
-    void processSignal(BasicSignal<?> signal);
+    Object processSignal(BasicSignal<?> signal);
 }

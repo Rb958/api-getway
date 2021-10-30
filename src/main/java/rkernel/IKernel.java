@@ -57,7 +57,7 @@ public interface IKernel {
      * Precess the incoming signal
      * @param signal Instance of signal received
      */
-    void processSignal(BasicSignal<?> signal);
+    Object processSignal(BasicSignal<?> signal);
 
     /**
      * Map of Kernel which are related to the current rkernel
