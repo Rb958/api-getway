@@ -24,7 +24,7 @@ signing {
 
 group ='io.github.rb958'
 archivesBaseName = "rkernel"
-version = '1.0'
+version = '1.0.1'
 
 uploadArchives {
     repositories {
