@@ -1,8 +1,8 @@
 package rkernel.signal;
 
 public abstract class BasicSignal<T> {
-    private String type;
-    private T payload;
+    protected String type;
+    protected T payload;
 
     protected BasicSignal(String type, T payload){
         this.type = type;

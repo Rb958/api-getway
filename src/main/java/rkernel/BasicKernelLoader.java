@@ -14,9 +14,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
-public final class BasicKernelLoader implements IComponentLoader<IKernel> {
-    private final HashMap<String, IKernel> kernels = new HashMap<>();
-    private IKernel kernel;
+public class BasicKernelLoader implements IComponentLoader<IKernel> {
+    protected final HashMap<String, IKernel> kernels = new HashMap<>();
+    protected IKernel kernel;
 
     @Override
     public void loadComponents(File folder) {
@@ -32,7 +32,7 @@ public final class BasicKernelLoader implements IComponentLoader<IKernel> {
         }
     }
 
-    private void executeClass(File file) {
+    protected void executeClass(File file) {
         try {
             Class<?> kernelClass = loadSingleFile(file, IKernel.class);
             Constructor<?> constructor = kernelClass.getConstructor();

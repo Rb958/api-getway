@@ -10,10 +10,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-public final class BasicComponentLoader implements IComponentLoader<IComponent>{
+public class BasicComponentLoader implements IComponentLoader<IComponent>{
 
-    private final HashMap<String, IComponent> components;
-    private IKernel defaultKernel;
+    protected final HashMap<String, IComponent> components;
+    protected IKernel defaultKernel;
 
     public BasicComponentLoader(){
         this.components = new HashMap<>();
@@ -32,7 +32,7 @@ public final class BasicComponentLoader implements IComponentLoader<IComponent>{
         }
     }
 
-    private void executeClass(File file){
+    protected void executeClass(File file){
         new Thread(() -> {
             try {
                 Class<?> tmpClass = loadSingleFile(file, IComponent.class);
@@ -69,7 +69,7 @@ public final class BasicComponentLoader implements IComponentLoader<IComponent>{
         }).watch();
     }
 
-    private void wipeComponent(File file) {
+    protected void wipeComponent(File file) {
         try{
             Class<?> componentClass = loadSingleFile(file, IComponent.class);
             Constructor<?> constructor = componentClass.getConstructor();
