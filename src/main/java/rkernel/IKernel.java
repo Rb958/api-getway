@@ -56,6 +56,7 @@ public interface IKernel {
     /**
      * Precess the incoming signal
      * @param signal Instance of signal received
+     * @return An instance of Object that is the result of signal processing
      */
     Object processSignal(BasicSignal<?> signal);
 
