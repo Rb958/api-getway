@@ -20,8 +20,8 @@ public class SignalManager implements ISignalManager{
     protected static SignalRegistry registry;
     protected IKernel kernel;
 
-    private final File documentroot = Paths.get(".").toFile();
-    private final String registriesDirectory = "/registries/";
+    protected final File documentroot = Paths.get(".").toFile();
+    protected final String registriesDirectory = "/registries/";
 
     public SignalManager(IKernel kernel) {
         this.kernel = kernel;

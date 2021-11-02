@@ -14,16 +14,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public final class BasicKernel implements IKernel{
+public class BasicKernel implements IKernel{
 
-    private SignalManager signalManager;
-    private final IComponentLoader<IComponent> componentLoader;
-    private final IComponentLoader<IKernel> kernelLoader;
-    private final Map<String, IKernel> kernels;
-    private final Map<String, IComponent> components;
-    private final Collection<String> signals;
+    protected SignalManager signalManager;
+    protected final IComponentLoader<IComponent> componentLoader;
+    protected final IComponentLoader<IKernel> kernelLoader;
+    protected final Map<String, IKernel> kernels;
+    protected final Map<String, IComponent> components;
+    protected final Collection<String> signals;
 
-    private final String kernelName;
+    protected final String kernelName;
 
     BasicKernel(Builder builder) {
         this.componentLoader = builder.getComponentLoader();

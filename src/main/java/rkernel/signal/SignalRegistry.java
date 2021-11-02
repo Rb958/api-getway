@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
 public class SignalRegistry {
 
     @XmlElement(name = "Kernel", type = String.class)
-    private String kernelName;
+    protected String kernelName;
     @XmlElement(name = "SignalTypeEntries")
-    private final List<SignalTypeEntry> signalTypeEntries;
+    protected final List<SignalTypeEntry> signalTypeEntries;
 
     public SignalRegistry() {
         signalTypeEntries = new ArrayList<>();
