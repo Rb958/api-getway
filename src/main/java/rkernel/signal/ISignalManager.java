@@ -9,6 +9,9 @@ import rkernel.IKernel;
 import rkernel.component.IComponent;
 import rkernel.exception.SignalRegistryException;
 
+import java.nio.file.Path;
+import java.util.Collection;
+
 public interface ISignalManager {
 
     Object findInterpreter(String type) throws SignalRegistryException;
@@ -22,4 +25,8 @@ public interface ISignalManager {
     void setKernel(BasicKernel kernel) throws SignalRegistryException;
 
     SignalRegistry.SignalTypeEntry getRegistryEntry(String test);
+
+    Collection<String> retrieveKernelsSignals();
+
+    Path getRegistryPath();
 }

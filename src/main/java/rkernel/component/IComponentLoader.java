@@ -29,7 +29,8 @@ public interface IComponentLoader<T> {
         try(URLClassLoader loader = new URLClassLoader(new URL[]{url}); JarFile jarFile = new JarFile(file.getAbsolutePath())) {
             Enumeration<JarEntry> enumeration = jarFile.entries();
             boolean found = false;
-            while (enumeration.hasMoreElements() || !found) {
+            int iterator = 0;
+            while (enumeration.hasMoreElements() && !found) {
                 String tmpClassName = enumeration.nextElement().toString();
                 if (tmpClassName.endsWith(".class")) {
                     tmpClassName = tmpClassName.substring(0, tmpClassName.length() - 6);

@@ -7,11 +7,14 @@ import rkernel.exception.FileManagerException;
 import rkernel.exception.SignalRegistryException;
 import rkernel.utils.file.FileManager;
 
+import java.awt.image.Kernel;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +39,7 @@ public class SignalManager implements ISignalManager{
         }
     }
 
+    @Override
     public Object findInterpreter(String type){
         List<SignalRegistry.SignalTypeEntry> entries = registry.getSignalTypeEntries()
                 .stream()
@@ -59,6 +63,7 @@ public class SignalManager implements ISignalManager{
                 .getFileContent(getRegistryPath());
     }
 
+    @Override
     public void setKernel(BasicKernel kernel) {
         this.kernel = kernel;
     }
@@ -76,6 +81,18 @@ public class SignalManager implements ISignalManager{
         }
     }
 
+    @Override
+    public Collection<String> retrieveKernelsSignals(){
+        final Collection<String> signalType = new ArrayList<>();
+        registry.getSignalTypeEntries().forEach(signalTypeEntry -> {
+            if (!signalType.contains(signalTypeEntry.getType())) {
+                signalType.add(signalTypeEntry.getType());
+            }
+        });
+        return signalType;
+    }
+
+    @Override
     public Path getRegistryPath(){
         if (!Files.exists(Paths.get(documentroot.getPath().concat(registriesDirectory)))){
             try {
@@ -87,6 +104,7 @@ public class SignalManager implements ISignalManager{
         return Paths.get(documentroot.getPath().concat("/registries/"+ kernel.getName().replace(" ", "_") +".xml"));
     }
 
+    @Override
     public void addSignalType(String type, IComponent component) throws SignalRegistryException {
         registry.addSignalType(type, component);
         try {
@@ -96,6 +114,7 @@ public class SignalManager implements ISignalManager{
         }
     }
 
+    @Override
     public void addSignalType(String type, IKernel kernel) throws SignalRegistryException {
         registry.addSignalType(type, kernel);
         try {
@@ -105,6 +124,7 @@ public class SignalManager implements ISignalManager{
         }
     }
 
+    @Override
     public void removeSignalType(String type) throws SignalRegistryException {
         registry.removeSignalType(type);
         try {

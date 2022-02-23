@@ -120,6 +120,6 @@ public interface IKernel {
      * @return true if it's the default rkernel and false else
      */
     default boolean isDefault(){
-        return getName() != null && !getName().isEmpty() && getName().equalsIgnoreCase("Default rkernel");
+        return getName() != null && !getName().isEmpty() && getName().equalsIgnoreCase("DefaultKernel");
     }
 }

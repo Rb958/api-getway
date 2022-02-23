@@ -1,5 +1,6 @@
 package rkernel;
 
+import rkernel.component.BasicComponentLoader;
 import rkernel.component.IComponent;
 import rkernel.component.IComponentLoader;
 import rkernel.signal.BasicSignal;
@@ -17,15 +18,15 @@ import java.util.*;
 public class BasicKernel implements IKernel{
 
     protected SignalManager signalManager;
-    protected final IComponentLoader<IComponent> componentLoader;
-    protected final IComponentLoader<IKernel> kernelLoader;
-    protected final Map<String, IKernel> kernels;
-    protected final Map<String, IComponent> components;
-    protected final Collection<String> signals;
+    protected IComponentLoader<IComponent> componentLoader;
+    protected IComponentLoader<IKernel> kernelLoader;
+    protected Map<String, IKernel> kernels;
+    protected Map<String, IComponent> components;
+    protected Collection<String> signals;
 
-    protected final String kernelName;
+    protected String kernelName = "DefaultKernel";
 
-    BasicKernel(Builder builder) {
+    public BasicKernel(Builder builder) {
         this.componentLoader = builder.getComponentLoader();
         this.kernelLoader = builder.getKernelLoader();
         this.kernels = builder.getKernels();
@@ -34,10 +35,19 @@ public class BasicKernel implements IKernel{
         this.kernelName = builder.name;
     }
 
+    public BasicKernel() {
+        this.componentLoader = new BasicComponentLoader();
+        this.kernelLoader = new BasicKernelLoader();
+        this.kernels = new HashMap<>();
+        this.components = new HashMap<>();
+        this.signals = new ArrayList<>();
+    }
+
     @Override
     public void load() {
         try {
             signalManager = new SignalManager(this);
+            signals = signalManager.retrieveKernelsSignals();
             File file = Paths.get(".").toFile();
             Path componentPath = Paths.get("components/".concat(kernelName));
             if (Files.notExists(componentPath))
@@ -51,6 +61,7 @@ public class BasicKernel implements IKernel{
             }
             if (kernelLoader != null) {
                 new Thread(() -> {
+                    kernelLoader.setKernel(this);
                     kernelLoader.loadComponents(file);
                     kernelLoader.watch(file);
                 }).start();
@@ -143,7 +154,7 @@ public class BasicKernel implements IKernel{
             this.kernelLoader = null;
             this.kernels = new HashMap<>();
             this.signals = new ArrayList<>();
-            this.name = "Default rkernel";
+            this.name = "DefaultKernel";
         }
 
         IComponentLoader<IComponent> getComponentLoader() {

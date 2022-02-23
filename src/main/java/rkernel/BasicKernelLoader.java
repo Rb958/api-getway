@@ -64,11 +64,15 @@ public class BasicKernelLoader implements IComponentLoader<IKernel> {
 
     @Override
     public void watch(File watchedDirectory) {
+        System.out.println("Start watching folder "+ watchedDirectory.getAbsolutePath() + "...");
         FileWatcher kernelWatch = new FileWatcher(watchedDirectory);
         kernelWatch.addEventListener(new FileAdapter() {
             @Override
             public void onCreateFile(FileEvent event) {
-                executeClass(event.getFile());
+                new Thread(()->{
+                    System.out.println("New file detected : "+ event.getFile().getName());
+                    executeClass(event.getFile());
+                }).start();
             }
         }).watch();
     }
