@@ -3,6 +3,7 @@ package rkernel;
 import rkernel.component.BasicComponentLoader;
 import rkernel.component.IComponent;
 import rkernel.component.IComponentLoader;
+import rkernel.exception.UnImplementedMethod;
 import rkernel.signal.BasicSignal;
 import rkernel.signal.ISignalManager;
 import rkernel.signal.SignalManager;
@@ -15,7 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class BasicKernel implements IKernel{
+public final class BasicKernel implements IKernel{
 
     protected SignalManager signalManager;
     protected IComponentLoader<IComponent> componentLoader;
@@ -23,6 +24,7 @@ public class BasicKernel implements IKernel{
     protected Map<String, IKernel> kernels;
     protected Map<String, IComponent> components;
     protected Collection<String> signals;
+    protected boolean running;
 
     protected String kernelName = "DefaultKernel";
 
@@ -44,8 +46,9 @@ public class BasicKernel implements IKernel{
     }
 
     @Override
-    public void load() {
+    public synchronized void load() {
         try {
+            this.running = true;
             signalManager = new SignalManager(this);
             signals = signalManager.retrieveKernelsSignals();
             File file = Paths.get(".").toFile();
@@ -81,24 +84,27 @@ public class BasicKernel implements IKernel{
     }
 
     @Override
-    public Collection<IKernel> dispatchSignal(BasicSignal<?> signal) {
-        List<IKernel> tmpKernel = new ArrayList<>();
-        processSignal(signal);
-        return tmpKernel;
+    public Object dispatchSignal(BasicSignal<?> signal) {
+        Object response = null;
+        try {
+            // Find Interpreter
+            Object interpreter = getInterpreterOf(signal.getType());
+            // Call Interpreter with his data
+            if (interpreter instanceof IComponent) {
+                response = ((IComponent) interpreter).processSignal(signal);
+            } else if (interpreter instanceof IKernel) {
+                System.out.println("Interpreter : " + ((IKernel) interpreter).getName());
+                response = ((IKernel) interpreter).processSignal(signal);
+            }
+        } catch (UnImplementedMethod unImplementedMethod) {
+            dispatchLogException(unImplementedMethod);
+        }
+        return response;
     }
 
     @Override
-    public Object processSignal(BasicSignal<?> signal) {
-        Object response = null;
-        // Find Interpreter
-        Object interpreter = getInterpreterOf(signal.getType());
-        // Call Interpreter with his data
-        if (interpreter instanceof IComponent){
-            response = ((IComponent) interpreter).processSignal(signal);
-        }else if (interpreter instanceof IKernel){
-            response = ((IKernel) interpreter).processSignal(signal);
-        }
-        return response;
+    public Object processSignal(BasicSignal<?> signal) throws UnImplementedMethod {
+        throw new UnImplementedMethod();
     }
 
     @Override
@@ -140,6 +146,11 @@ public class BasicKernel implements IKernel{
     public void dispatchLogException(Exception e) {
         LoggingSignal loggingSignal = new LoggingSignal(e);
         this.dispatchSignal(loggingSignal);
+    }
+
+    @Override
+    public boolean isRunning() {
+        return running;
     }
 
     public static final class Builder{
@@ -193,5 +204,18 @@ public class BasicKernel implements IKernel{
             this.componentLoader.setKernel(kernel);
             return kernel;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BasicKernel that = (BasicKernel) o;
+        return kernelName.equals(that.kernelName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(kernelName);
     }
 }

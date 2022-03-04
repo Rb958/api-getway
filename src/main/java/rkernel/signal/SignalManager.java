@@ -7,7 +7,6 @@ import rkernel.exception.FileManagerException;
 import rkernel.exception.SignalRegistryException;
 import rkernel.utils.file.FileManager;
 
-import java.awt.image.Kernel;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,7 +28,8 @@ public class SignalManager implements ISignalManager{
     public SignalManager(IKernel kernel) {
         this.kernel = kernel;
         try {
-            if (!FileManager.getInstance(documentroot).pathExist(getRegistryPath())){
+            Path registryPath = getRegistryPath();
+            if (!FileManager.getInstance(documentroot).pathExist(registryPath)){
                 registry = new SignalRegistry(kernel.getName());
                 flush(registry);
             }
@@ -101,7 +101,7 @@ public class SignalManager implements ISignalManager{
                 kernel.dispatchLogException(e);
             }
         }
-        return Paths.get(documentroot.getPath().concat("/registries/"+ kernel.getName().replace(" ", "_") +".xml"));
+        return Paths.get(documentroot.getPath().concat("/registries/registry.xml"));
     }
 
     @Override
