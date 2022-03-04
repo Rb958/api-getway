@@ -1,5 +1,5 @@
 /*#################################################################################################
- # Copyright (c) 2021 Richie AKAWA                                                                   #
+ # Copyright (c) 2021 Richie AKAWA                                                                #
  #################################################################################################*/
 
 package rkernel.signal;
@@ -19,7 +19,8 @@ public class SignalRegistry {
 
     @XmlElement(name = "Kernel", type = String.class)
     protected String kernelName;
-    @XmlElement(name = "SignalTypeEntries")
+    @XmlElementWrapper(name = "SignalTypeEntries")
+    @XmlElement(name = "SignalTypeEntry")
     protected final List<SignalTypeEntry> signalTypeEntries;
 
     public SignalRegistry() {

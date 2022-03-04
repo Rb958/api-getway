@@ -46,10 +46,10 @@ public interface IKernel {
     /**
      * Dispatch a signal to all the rkernel which are related to this rkernel.
      * @param signal Instance of Signal
-     * @return Collection of kernels which the signal has been sent to
+     * @return The result of signal process
      * @throws UnImplementedMethod Exception thrown when this method was not implemented
      */
-    default Collection<IKernel> dispatchSignal(BasicSignal<?> signal) throws UnImplementedMethod {
+    default Object dispatchSignal(BasicSignal<?> signal) throws UnImplementedMethod {
         throw new UnImplementedMethod();
     }
 
@@ -58,7 +58,7 @@ public interface IKernel {
      * @param signal Instance of signal received
      * @return An instance of Object that is the result of signal processing
      */
-    Object processSignal(BasicSignal<?> signal);
+    Object processSignal(BasicSignal<?> signal) throws UnImplementedMethod;
 
     /**
      * Map of Kernel which are related to the current rkernel
@@ -120,6 +120,12 @@ public interface IKernel {
      * @return true if it's the default rkernel and false else
      */
     default boolean isDefault(){
-        return getName() != null && !getName().isEmpty() && getName().equalsIgnoreCase("Default rkernel");
+        return getName() != null && !getName().isEmpty() && getName().equalsIgnoreCase("DefaultKernel");
     }
+
+    /**
+     * Check if Kernel is running
+     * @return true if an instance of Ikernel exists and actually running
+     */
+    boolean isRunning();
 }

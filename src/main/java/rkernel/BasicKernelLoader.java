@@ -3,6 +3,7 @@ package rkernel;
 import rkernel.component.IComponentLoader;
 import rkernel.exception.FileManagerException;
 import rkernel.exception.SignalRegistryException;
+import rkernel.exception.UnImplementedMethod;
 import rkernel.utils.file.FileAdapter;
 import rkernel.utils.file.FileEvent;
 import rkernel.utils.file.FileManager;
@@ -10,8 +11,6 @@ import rkernel.utils.file.FileWatcher;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 public class BasicKernelLoader implements IComponentLoader<IKernel> {
@@ -35,8 +34,7 @@ public class BasicKernelLoader implements IComponentLoader<IKernel> {
     protected void executeClass(File file) {
         try {
             Class<?> kernelClass = loadSingleFile(file, IKernel.class);
-            Constructor<?> constructor = kernelClass.getConstructor();
-            IKernel tmpKernel = (IKernel) constructor.newInstance();
+            IKernel tmpKernel = (IKernel) KernelFactory.getInstance(kernelClass);
             if (!tmpKernel.isDefault()) {
                 tmpKernel.getSignalType().forEach(signalType -> {
                     try {
@@ -45,9 +43,13 @@ public class BasicKernelLoader implements IComponentLoader<IKernel> {
                         kernel.dispatchLogException(e);
                     }
                 });
+                if(!tmpKernel.isRunning()) {
+                    tmpKernel.load();
+                    System.out.println(tmpKernel.getName() + " has successfully loaded");
+                }
                 kernel.addKernel(tmpKernel);
             }
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException | IOException e) {
+        } catch (IOException | UnImplementedMethod e) {
             kernel.dispatchLogException(e);
         }
     }
@@ -64,11 +66,15 @@ public class BasicKernelLoader implements IComponentLoader<IKernel> {
 
     @Override
     public void watch(File watchedDirectory) {
+        System.out.println("Start watching folder "+ watchedDirectory.getAbsolutePath() + "...");
         FileWatcher kernelWatch = new FileWatcher(watchedDirectory);
         kernelWatch.addEventListener(new FileAdapter() {
             @Override
             public void onCreateFile(FileEvent event) {
-                executeClass(event.getFile());
+                new Thread(()->{
+                    System.out.println("New file detected : "+ event.getFile().getName());
+                    executeClass(event.getFile());
+                }).start();
             }
         }).watch();
     }
